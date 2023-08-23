@@ -21,7 +21,7 @@ token = "pk.eyJ1Ijoiam9obmRvZWVkc2Z1ZXIiLCJhIjoiY2xkbXVtd28yMDRrdDN1czR4MHJlMXZo
 
 ###Defines a function that when called, reads in Data from Excel sheet and modifies it
 num_cols = []
-@st.cache_data(ttl=24*60*60)
+@st.cache(ttl=24*60*60)
 def get_data():
     df = pd.read_excel('Treaty6PathwaysAlliance_CG_NEW_ED2.xlsx') #Raw excel Data "C:\Users\cipri\fnpa_proj\fnpa_pathall_workingdir\Treaty6PathwaysAlliance_CG_NEW_ED2.xlsx"
     cols = ['Pathways Name', 'Facility Name',
