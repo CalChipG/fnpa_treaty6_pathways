@@ -53,7 +53,7 @@ with row0_1:
 #
 # Defining names for the Chart axes
 #
-reporting_axis = 'Pathways Name' 
+reporting_axis = 'Company Trade Name / Nom commercial de la société' 
 industry_axis = "English Facility NAICS Code Description / Description du code SCIAN de l'installation en anglais"
 co2_column = 'Total Emissions (tonnes CO2e) / Émissions totales (tonnes éq. CO2)'
 default_year = 2019
@@ -80,15 +80,15 @@ def chart1(df_filtered):  #Creates a new function whose input is the data extrac
 ###Below we groupd the data by facility name and company, so all facilities belonging to each company, giving a total for each facility 
 # belonging to each company, and then sorts from the largest emitting facility to the smallest. Then we reset the index of the data 
 # to match the sorting we specified.
-    total_df_filtered  = df_filtered.groupby(['Facility Name', 'Reporting Company Trade Name / Nom commercial de la société déclarante'])[
+    total_df_filtered  = df_filtered.groupby(['Facility Name', 'Company Trade Name / Nom commercial de la société'])[
         'Total Emissions (tonnes CO2e) / Émissions totales (tonnes éq. CO2)'].sum().sort_values(ascending=False).reset_index()
     
 #
 ### Below we define how the Legend of the chart will be laid out, based on how many companies are in the data frame.
 #
-    if len(total_df_filtered["Reporting Company Trade Name / Nom commercial de la société déclarante"]) > 10:  
+    if len(total_df_filtered["Company Trade Name / Nom commercial de la société"]) > 10:  
         leg = -1.05
-    elif len(total_df_filtered["Reporting Company Trade Name / Nom commercial de la société déclarante"]) > 5:
+    elif len(total_df_filtered["Company Trade Name / Nom commercial de la société"]) > 5:
         leg = -0.5
     else:
         leg = -0.2
@@ -96,7 +96,7 @@ def chart1(df_filtered):  #Creates a new function whose input is the data extrac
 ### Below we define the first chart as a bar graph, where the X-Axis is Company, and Y-Axis is total emissions. The color is based on the 
 ### Facility Name within each company.
 ### The rest here just lays out what the chart should look like
-    fig = px.bar(total_df_filtered, x="Reporting Company Trade Name / Nom commercial de la société déclarante", y="Total Emissions (tonnes CO2e) / Émissions totales (tonnes éq. CO2)",
+    fig = px.bar(total_df_filtered, x="Company Trade Name / Nom commercial de la société", y="Total Emissions (tonnes CO2e) / Émissions totales (tonnes éq. CO2)",
                 color='Facility Name')
     fig.update_layout(template='simple_white', xaxis_title='Reporting Company', xaxis={'categoryorder': 'total ascending'},
                     legend=dict(orientation="h", yanchor="top",
@@ -182,7 +182,7 @@ def chart3(df2):                            # Defines function for displaying ch
 def chart4(data): # Defines function chart4 that takes in a dataframe called "data" as input
     fig = go.Figure()  # Makes an empty figure plot.
 
-    report_col = 'Reporting Company Trade Name / Nom commercial de la société déclarante' # Stores reporting column name
+    report_col = 'Company Trade Name / Nom commercial de la société' # Stores reporting column name
 
     data[report_col] = data[report_col].fillna('None')  # if there is no value in the data, it puts in None
 
