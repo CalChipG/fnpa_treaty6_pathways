@@ -219,9 +219,9 @@ def chart4(data): # Defines function chart4 that takes in a dataframe called "da
     )
 ### Updates the map plot, setting the center to be the first entry in the facility if available, or fist entry in band. 
     try:
-        lon_foc, lat_foc = data_not_star.iloc[0]['Longitude'], data_star.iloc[0]['Latitude']
+        lon_foc, lat_foc = data_star.iloc[0]['Longitude'], data_star.iloc[0]['Latitude']
     except:
-        lon_foc, lat_foc = data_star.iloc[0]['Longitude'], data_not_star.iloc[0]['Latitude']
+        lon_foc, lat_foc = data_not_star.iloc[0]['Longitude'], data_not_star.iloc[0]['Latitude']
 
     fig.update_layout(
         mapbox=dict(
@@ -255,18 +255,43 @@ st.markdown(styl, unsafe_allow_html=True)
 #
 with st.sidebar:
     st.subheader('Configure the Plots')
-    band_chart = st.multiselect("Please select Primary Band Name", list(                #Allows users to select multiple bands
-            df['Band Name'].unique()), key='band_chart', default=["Beaver Lake Cree Nation"])
+    # band_chart = st.multiselect("Please select Primary Band Name", list(                #Allows users to select multiple bands
+    #         df['Band Name'].unique()), key='band_chart', default=["Beaver Lake Cree Nation"])
+    st.markdown('Please select from the available Treaty 6 Bands below:')
+    # Function to toggle the band
+    def toggle_band(band):
+        band_toggled[band] = not band_toggled[band]
+
+    # Get the unique band names from the DataFrame
+    band_names = df['Band Name'].unique()
+
+    # Create a dictionary to track the toggled state of each band
+    band_toggled = {band: False for band in band_names}
+
+    # Set the default band name that should be toggled on
+    default_band = "Alexis Nakota Sioux Nation"
+    band_toggled[default_band] = True
+
+    # Create toggle buttons for each band
+    for band in band_names:
+        # Generate a unique key using the band name
+        key = f"band_toggle_{band}"
+        band_toggled[band] = st.checkbox(band, value=band_toggled[band], key=key)
     
+    # Filter data for selected bands
+    band_chart = [band for band, toggled in band_toggled.items() if toggled]
+    data_dist = df[df['Band Name'].isin(band_chart)]
+
+    st.caption('Note: Not all Treaty 6 nations were represented in the public data. More nations will be added as the data improves.')
     
-    data_dist = df[df['Band Name'].isin(band_chart)]                                    # Uses Band location, and a calculation of distance and time to 
+    #data_dist = df[df['Band Name'].isin(band_chart)]                                    # Uses Band location, and a calculation of distance and time to 
     min_d = float(data_dist['Duration'].min()) / 3600                                   # set a radius. Minimum and maximum are defined by 
     max_d = float(data_dist['Duration'].max()) / 3600                                   # The min and max values of driving time for the selected Band
 
     max_dist = st.slider(
         'Select a range for Driving Duration (in hours)', min_value=min_d, max_value=max_d, value=max_d, step=0.5) # Sets slider min max values and a step
     agree = st.checkbox('Limit to top 15 bars', value=True) # Toggle that limits the amount of bars shown to 15 or All
-  
+    st.caption('Note: Not all Treaty 6 nations were represented in the public data. More nations will be added as the data improves.')
 #
 # Defines the lay out for a multi-column interface. 
 #
@@ -282,7 +307,7 @@ row5_spacer1, row5_1, row5_spacer2, row5_2, row5_spacer3 = st.columns(
 #         df['Reference Year / Année de référence'].unique()), key='year_chart1', index=4)
 with row5_1:
     year_chart1 = st.selectbox("Please Select year", sorted(
-        df['Reference Year / Année de référence'].unique(), reverse=True), key='year_chart1', index=4)
+        df['Reference Year / Année de référence'].unique(), reverse=True), key='year_chart1', index=0)
     st.markdown('This chart shows what corporations are emitting and in what volumes within a '+ str(round(max_dist,2)) +' hour of the selected band in the selected year.')
     st.markdown(
         'The size of bar indicates the total emissions released over the selected year by each corporation.')
@@ -309,7 +334,7 @@ with row7_1:
     # year_chart2 = st.selectbox("Please select year", list(
     #     df['Reference Year / Année de référence'].unique()), key='year_chart2', index=4)
     year_chart2 = st.selectbox("Please select year", sorted(
-        df['Reference Year / Année de référence'].unique(), reverse=True), key='year_chart2', index=4)
+        df['Reference Year / Année de référence'].unique(), reverse=True), key='year_chart2', index=0)
     st.markdown('''This chart describes what types of industries are operating within a '''+ str(round(max_dist,2)) +''' hour of the selected band name. 
 
 The size of bar indicates the total emissions released over the selected year. 
@@ -359,8 +384,8 @@ with row10_1:
 row11_spacer1, row11_1, row11_spacer2, row11_2, row11_spacer3 = st.columns(
     (.2, 2.3, .4, 4.4, .2))
 with row11_1:
-    year_chart4 = st.selectbox("Please elect year", list(
-        df['Reference Year / Année de référence'].unique()), key='year_chart4', index=4)
+    year_chart4 = st.selectbox("Please select year", sorted(
+        df['Reference Year / Année de référence'].unique(), reverse=True), key='year_chart4', index=0)
     df_filtered4 = chart1_data(band_chart, year_chart4)
 
 
